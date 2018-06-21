@@ -14,10 +14,10 @@ if (empty($termo)){
 } else {
 	// Executa uma consulta baseada no termo de pesquisa passado como parâmetro
 	$conexao = conexao::getInstance();
-	$sql = 'SELECT id_pes, nome_pes, email_pes, celular_pes FROM pessoas WHERE nome_pes LIKE :nome OR email_pes LIKE :email';
+	$sql = 'SELECT id_pes, nome_pes, email_pes, celular_pes FROM pessoas WHERE exibe_pes = true AND (UPPER(nome_pes) LIKE :nome OR UPPER(email_pes) LIKE :email)';
 	$stm = $conexao->prepare($sql);
-	$stm->bindValue(':nome', $termo.'%');
-	$stm->bindValue(':email', $termo.'%');
+	$stm->bindValue(':nome', strtoupper($termo).'%');
+	$stm->bindValue(':email', strtoupper($termo).'%');
 	$stm->execute();
 	$pessoas = $stm->fetchAll(PDO::FETCH_OBJ);
 }

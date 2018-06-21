@@ -43,12 +43,12 @@ var linkExclusao = document.querySelectorAll(".link_exclusao");
 if (linkExclusao != null) {
 	for (var i = 0; i < linkExclusao.length; i++) {
 		(function (i) {
-			var id_cliente = linkExclusao[i].getAttribute('rel');
+			var id_pessoa = linkExclusao[i].getAttribute('rel');
 
 			if (linkExclusao[i].addEventListener) {
-				linkExclusao[i].addEventListener("click", function () { confirmaExclusao(id_cliente); });
+				linkExclusao[i].addEventListener("click", function () { confirmaExclusao(id_pessoa); });
 			} else if (linkExclusao[i].attachEvent) {
-				linkExclusao[i].attachEvent("onclick", function () { confirmaExclusao(id_cliente); });
+				linkExclusao[i].attachEvent("onclick", function () { confirmaExclusao(id_pessoa); });
 			}
 		})(i);
 	}
@@ -64,6 +64,7 @@ function validaCadastro(evt) {
 	celular = document.getElementById('celular');
 	filtro = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
 	email = document.getElementById('email');
+	rua = document.getElementById('rua');
 	contErro = 0;
 
 	/* Validação do campo nome */
@@ -141,15 +142,53 @@ function validaCadastro(evt) {
 	/* Validação do campo genero */
 	caixa_genero = document.querySelector('.msg-genero');
 	if (genero.value == "") {
-		caixa_genero.innerHTML = "Selecione uma opção no campo Gênero";
+		caixa_genero.innerHTML = "Selecione uma opção";
 		caixa_genero.style.display = 'block';
 		contErro += 1;
 	} else {
 		caixa_genero.style.display = 'none';
 	}
 
+	/* Validação de rua */
+	caixa_rua = document.querySelector('.msg-rua');
+	if (rua.value == "") {
+		caixa_rua.innerHTML = "Rua não pode estar vazio";
+		caixa_rua.style.display = 'block';
+		contErro += 1;
+	} else {
+		caixa_rua.style.display = 'none';
+	}
+	/* Validação de bairro */
+	caixa_bairro = document.querySelector('.msg-bairro');
+	if (bairro.value == "") {
+		caixa_bairro.innerHTML = "Bairro não pode estar vazio";
+		caixa_bairro.style.display = 'block';
+		contErro += 1;
+	} else {
+		caixa_bairro.style.display = 'none';
+	}
+	/* Validação de cep */
+	caixa_cep = document.querySelector('.msg-cep');
+	if (cep.value == "") {
+		caixa_cep.innerHTML = "CEP não pode estar vazio";
+		caixa_cep.style.display = 'block';
+		contErro += 1;
+	} else {
+		caixa_cep.style.display = 'none';
+	}
+	/* Validação de cidade */
+	caixa_cidade = document.querySelector('.msg-cidade');
+	if (cidade.value == "") {
+		caixa_cidade.innerHTML = "Selecione uma Cidade";
+		caixa_cidade.style.display = 'block';
+		contErro += 1;
+	} else {
+		caixa_cidade.style.display = 'none';
+	}
+
 	if (contErro > 0) {
 		evt.preventDefault();
+		return false;
 	}
 }
 
@@ -205,7 +244,7 @@ function confirmaExclusao(id) {
 
 		//Cria um formulário
 		var formulario = document.createElement("form");
-		formulario.action = "action_cliente.php";
+		formulario.action = "action_pessoa.php";
 		formulario.method = "post";
 
 		// Cria os inputs e adiciona ao formulário
@@ -226,5 +265,28 @@ function confirmaExclusao(id) {
 
 		//Envia o formulário
 		formulario.submit();
+	}
+}
+
+function busca_cidade(obj) {
+	div = obj.parentElement.parentElement;
+	uf = obj.value;
+	if (uf != '') {
+		xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function () {
+			if (xhttp.readyState == XMLHttpRequest.DONE) {
+				dropdown = div.getElementsByClassName('cidade')[0];
+				dropdown.innerHTML = '';
+				data = JSON.parse(xhttp.responseText);
+				for (i = 0; i < data.length; i++) {
+					option = document.createElement('option');
+					option.text = data[i].nome_cid;
+					option.value = data[i].id_cid;
+					dropdown.add(option);
+				}
+			}
+		}
+		xhttp.open("GET", "action_cidade?uf=" + uf, true);
+		xhttp.send();
 	}
 }

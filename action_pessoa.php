@@ -89,8 +89,28 @@
 			$stm->bindValue(':celular', $celular);
 			$stm->bindValue(':email', $email);
 			$retorno = $stm->execute();
-
+			
 			if ($retorno){
+				$idPessoa = $conexao->lastInsertId('pessoas_id_pes_seq');
+				$rua = isset($_POST['rua']) ? trim($_POST['rua']) : '';
+				$num = isset($_POST['numero']) ? trim($_POST['numero']) : '';
+				$compl = isset($_POST['complemento']) ? trim($_POST['complemento']) : '';
+				$bairro = isset($_POST['bairro']) ? trim($_POST['bairro']) : '';
+				$cep = isset($_POST['cep']) ? trim($_POST['cep']) : '';
+				$cidade = isset($_POST['cidade']) ? trim($_POST['cidade']) : '';
+
+				$sql = 'INSERT INTO enderecos(rua_end, numero_end, compl_end, bairro_end, cep_end, id_pes, id_cid) VALUES(:rua, :num, :compl, :bairro, :cep, :id_pes, :id_cid)';
+	
+				$stm = $conexao->prepare($sql);
+				$stm->bindValue(':rua', $rua);
+				$stm->bindValue(':num', $num);
+				$stm->bindValue(':compl', $compl);
+				$stm->bindValue(':bairro', $bairro);
+				$stm->bindValue(':cep', $cep);
+				$stm->bindValue(':id_pes', $idPessoa);
+				$stm->bindValue(':id_cid', $cidade);
+				$stm->execute();
+
 				echo "<div class='alert alert-success' role='alert'>Registro inserido com sucesso, aguarde!</div>";
 			} else {
 		    	echo "<div class='alert alert-danger' role='alert'>Ops! Ocorreu um erro ao inserir registro, tente novamente!</div>";
@@ -113,8 +133,32 @@
 			$stm->bindValue(':email', $email);
 			$stm->bindValue(':id', $id);
 			$retorno = $stm->execute();
-
+			
 			if ($retorno){
+				$sql = 'DELETE FROM enderecos WHERE id_pes = :id';
+				$stm = $conexao->prepare($sql);
+				$stm->bindValue(':id', $id);
+				$retorno = $stm->execute();
+
+				$rua = isset($_POST['rua']) ? trim($_POST['rua']) : '';
+				$num = isset($_POST['numero']) ? trim($_POST['numero']) : '';
+				$compl = isset($_POST['complemento']) ? trim($_POST['complemento']) : '';
+				$bairro = isset($_POST['bairro']) ? trim($_POST['bairro']) : '';
+				$cep = isset($_POST['cep']) ? trim($_POST['cep']) : '';
+				$cidade = isset($_POST['cidade']) ? trim($_POST['cidade']) : '';
+
+				$sql = 'INSERT INTO enderecos(rua_end, numero_end, compl_end, bairro_end, cep_end, id_pes, id_cid) VALUES(:rua, :num, :compl, :bairro, :cep, :id_pes, :id_cid)';
+	
+				$stm = $conexao->prepare($sql);
+				$stm->bindValue(':rua', $rua);
+				$stm->bindValue(':num', $num);
+				$stm->bindValue(':compl', $compl);
+				$stm->bindValue(':bairro', $bairro);
+				$stm->bindValue(':cep', $cep);
+				$stm->bindValue(':id_pes', $id);
+				$stm->bindValue(':id_cid', $cidade);
+				$stm->execute();
+
 				echo "<div class='alert alert-success' role='alert'>Registro editado com sucesso, aguarde!</div> ";
 			} else {
 		    	echo "<div class='alert alert-danger' role='alert'>Ops! Parece que ocorreu um erro ao editar, tente novamente!</div> ";
